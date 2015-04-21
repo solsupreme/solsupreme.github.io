@@ -1,7 +1,11 @@
 (function () {
 
-'use strict';
+  'use strict';
 
+  require('angular');
+  require('angular-route');
+  require('angular-animate');
+  var mainCtrl = require('./controllers/mainctrl');
 
   angular.module('RandomBaba', ['ngRoute', 'ngAnimate'])
 
@@ -20,16 +24,9 @@
            redirectTo: '/'
         });
     }
-  ]);
+  ])
 
   //Load controller
-  angular.module('RandomBaba')
-
-  .controller('MainController', [
-    '$scope',
-    function($scope) {
-      $scope.test = "Testing...";
-    }
-  ]);
+  .controller('MainController', ['$scope', mainCtrl]);
 
 }());

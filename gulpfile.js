@@ -3,10 +3,12 @@ var gulp = require('gulp');
 
 // plugins
 var connect = require('gulp-connect');
-var jshint 	= require('gulp-jshint');
-var uglify 	= require('gulp-uglify');
+var jshint = require('gulp-jshint');
+var uglify = require('gulp-uglify');
 var minifyCSS = require('gulp-minify-css');
-var clean 	= require('gulp-clean');
+var clean = require('gulp-clean');
+var browserify = require('gulp-browserify');
+var concat = require('gulp-concat');
 
 // tasks
 gulp.task('lint', function() {
@@ -17,6 +19,8 @@ gulp.task('lint', function() {
 });
 gulp.task('clean', function() {
     gulp.src('./dist/*')
+      .pipe(clean({force: true}));
+    gulp.src('./app/js/bundled.js')
       .pipe(clean({force: true}));
 });
 gulp.task('minify-css', function() {
@@ -53,13 +57,31 @@ gulp.task('connectDist', function () {
     port: 9999
   });
 });
+gulp.task('browserify', function() {
+  gulp.src(['app/js/app.js'])
+  .pipe(browserify({
+    insertGlobals: true,
+    debug: true
+  }))
+  .pipe(concat('bundled.js'))
+  .pipe(gulp.dest('./app/js'))
+});
+gulp.task('browserifyDist', function() {
+  gulp.src(['app/js/app.js'])
+  .pipe(browserify({
+    insertGlobals: true,
+    debug: true
+  }))
+  .pipe(concat('bundled.js'))
+  .pipe(gulp.dest('./dist/js'))
+});
 
 
 // default task
 gulp.task('default',
-  ['lint', 'connect']
+  ['lint', 'browserify', 'connect']
 );
 // build task
 gulp.task('build',
-  ['lint', 'minify-css', 'minify-js', 'copy-html-files', 'copy-bower-components', 'connectDist']
+  ['lint', 'minify-css', 'browserifyDist', 'copy-html-files', 'copy-bower-components', 'connectDist']
 );
